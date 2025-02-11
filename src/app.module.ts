@@ -24,8 +24,8 @@ import { envs } from './config/envs';
       username: envs.dbUsername,
       password: envs.dbPassword,
       database: envs.dbName,
-      entities: [],
       synchronize: true,
+      autoLoadEntities: true
     }),
     ItemsModule,
   ],
