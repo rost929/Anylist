@@ -14,8 +14,6 @@ export class ItemsService {
   ) {}
 
   async create(createItemInput: CreateItemInput): Promise<Item> {
-    console.log('enter here ', createItemInput);
-
     const newItem = this.itemsRepository.create(createItemInput);
     return await this.itemsRepository.save(newItem);
   }
@@ -37,10 +35,8 @@ export class ItemsService {
     if (!item) {
       throw new NotFoundException(`Item with id ${id} not found`);
     }
-    
+  
     if (isEqual({ ...item }, { ...updateItemInput })) {
-      console.log('No new changes fetched');
-
       return item;
     }
     return this.itemsRepository.save(item);
