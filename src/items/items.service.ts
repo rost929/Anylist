@@ -35,14 +35,14 @@ export class ItemsService {
     if (!item) {
       throw new NotFoundException(`Item with id ${id} not found`);
     }
-  
+
     if (isEqual({ ...item }, { ...updateItemInput })) {
       return item;
     }
     return this.itemsRepository.save(item);
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<Item> {
     const item = await this.findOne(id);
     await this.itemsRepository.remove(item);
     return { ...item, id };
