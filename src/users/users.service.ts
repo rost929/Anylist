@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotImplementedException,
 } from '@nestjs/common';
@@ -26,8 +27,7 @@ export class UsersService {
 
       return await this.usersRepository.save(newUser);
     } catch (error) {
-      Logger.error(error);
-      throw new BadRequestException('Something wnet wrong');
+      this.handleDBErrors(error);
     }
   }
 
@@ -35,11 +35,34 @@ export class UsersService {
     return [];
   }
 
-  findOne(id: string): Promise<User> {
-    throw new NotImplementedException('findOne not implemented');
+  async findOneByEmail(email: string): Promise<User> {
+    try {
+      return await this.usersRepository.findOneOrFail({
+        where: {
+          email,
+        },
+      });
+    } catch (error) {
+      this.handleDBErrors({
+        code: 'error-001',
+        detail: `${email} not found`,
+      });
+    }
   }
 
   block(id: string): Promise<User> {
     throw new NotImplementedException('findOne not implemented');
+  }
+
+  private handleDBErrors(error: any): never {
+    if (error.code === '23505') {
+      throw new BadRequestException(error.detail.replace('key ', ''));
+    }
+
+    if (error.code === 'error-001') {
+      throw new BadRequestException(error.detail.replace('key ', ''));
+    }
+    Logger.error(error);
+    throw new InternalServerErrorException('Please check server logs');
   }
 }
