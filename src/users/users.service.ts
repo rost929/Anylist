@@ -50,6 +50,17 @@ export class UsersService {
     }
   }
 
+  async findOneById(id: string): Promise<User> {
+    try {
+      return await this.usersRepository.findOneOrFail({ where: { id } });
+    } catch (error) {
+      this.handleDBErrors({
+        code: 'error-001',
+        detail: `${id} not found`,
+      });
+    }
+  }
+
   block(id: string): Promise<User> {
     throw new NotImplementedException('findOne not implemented');
   }

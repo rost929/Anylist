@@ -3,6 +3,10 @@ import { AuthService } from './auth.service';
 import { SignUpInput } from './dto/inputs/signup.input';
 import { AuthResponse } from './types/auth-response.type';
 import { LoginInput } from './dto/inputs/login.input';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Resolver()
 export class AuthResolver {
@@ -22,8 +26,9 @@ export class AuthResolver {
     return this.authService.login(loginInput);
   }
 
-  /* @Query(  , { name: 'revalidate'})
-  async revalidateToken() {
-    return this.authService.revalidateToken();
-  } */
+  @Query(() => AuthResponse, { name: 'revalidate' })
+  @UseGuards(JwtAuthGuard)
+  async revalidateToken(@CurrentUser() user: User) {
+    return this.authService.revalidateToken(user);
+  }
 }
